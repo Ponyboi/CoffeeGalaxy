@@ -280,8 +280,6 @@ public class ControllerInput : MonoBehaviour {
 	}
 	
 	private static bool ButtonDown(string buttonName, int controllerNum){
-		Debug.Log("ButtonDown Name: " + buttonName + "_" + controllerNum);
-		Debug.Log("ButtonDown Value: " + Input.GetButtonDown(buttonName + "_" + controllerNum));
 		return Input.GetButtonDown(buttonName + "_" + controllerNum);
 	}
 	
@@ -299,7 +297,7 @@ public class ControllerInput : MonoBehaviour {
 	
 	private static float Axis(string axisName, int controllerNum, float deadMagnitude){
 		float result = Axis(axisName, controllerNum);
-		if(result < deadMagnitude){
+		if(Mathf.Abs(result) < deadMagnitude){
 			result = 0;	
 		}
 		return result;

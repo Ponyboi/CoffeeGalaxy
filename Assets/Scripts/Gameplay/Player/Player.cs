@@ -22,10 +22,10 @@ public class Player : MonoBehaviour {
 	void FixedUpdate () {
 
 		//Movement
-		float Move = ControllerInput.LeftAnalog_X_Axis(id);
+		float Move = ControllerInput.LeftAnalog_X_Axis(id, 0.2f);
 		//float Move = Input.GetAxis("Horizontal")
 		rigidbody2D.velocity = new Vector2(Move * MaxSpeed, rigidbody2D.velocity.y);
-		Debug.Log("Move Value: " + Move);
+//		Debug.Log("Move Value: " + Move);
 			Anim.SetFloat("Speed", Mathf.Abs(Move));
 
 		if(Move > 0 && !FacingRight) {
@@ -42,7 +42,6 @@ public class Player : MonoBehaviour {
 
 	void Update() {
 		if (Grounded && ControllerInput.A_ButtonDown(id)) {
-			Debug.Log ("in jump");
 			Anim.SetBool("Ground", false);
 			rigidbody2D.AddForce(new Vector2(0, JumpForce));
 		}
