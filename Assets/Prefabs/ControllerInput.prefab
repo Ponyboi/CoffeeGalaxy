@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400000}
+  - 114: {fileID: 11400000}
+  m_Layer: 0
+  m_Name: ControllerInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400000
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.43562126, y: 1.54512489, z: .24609375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2233a4f349fcf44e8859cb2a64652d67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfControllers: 4
+  buttonMinimum: .5
+  A_ButtonFireString: Xbox_A
+  B_ButtonFireString: Xbox_B
+  X_ButtonFireString: Xbox_X
+  Y_ButtonFireString: Xbox_Y
+  Left_Dpad_ButtonString: Xbox_Dpad_Left
+  Right_Dpad_ButtonString: Xbox_Dpad_Right
+  Up_Dpad_ButtonString: Xbox_Dpad_Up
+  Down_Dpad_ButtonString: Xbox_Dpad_Down
+  Left_Bumper_ButtonString: Xbox_LeftBumper
+  Right_Bumper_ButtonString: Xbox_RightBumper
+  Left_Analog_ButtonString: Xbox_LeftAnalog_Click
+  Right_Analog_ButtonString: Xbox_RightAnalog_Click
+  LeftTrigger_AxisString: Xbox_LeftTriggerAxis
+  RightTrigger_AxisString: Xbox_RightTriggerAxis
+  LeftAnalog_X_AxisString: Xbox_LeftAnalog_X_Axis
+  LeftAnalog_Y_AxisString: Xbox_LeftAnalog_Y_Axis
+  RightAnalog_X_AxisString: Xbox_RightAnalog_X_Axis
+  RightAnalog_Y_AxisString: Xbox_RightAnalog_Y_Axis
+  Back_ButtonString: Xbox_Back
+  Start_ButtonString: Xbox_Start
+  Home_ButtonString: Xbox_Home
+  LeftTrigger_AxisString_Windows: Xbox_LeftTriggerAxis
+  RightTrigger_AxisString_Windows: Xbox_RightTriggerAxis
+  LeftAnalog_X_AxisString_Windows: Xbox_LeftAnalog_X_Axis_Windows
+  LeftAnalog_Y_AxisString_Windows: Xbox_LeftAnalog_Y_Axis_Windows
+  RightAnalog_X_AxisString_Windows: Xbox_RightAnalog_X_Axis_Windows
+  RightAnalog_Y_AxisString_Windows: Xbox_RightAnalog_Y_Axis_Windows
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 100000}
+  m_IsPrefabParent: 1
+  m_IsExploded: 1
