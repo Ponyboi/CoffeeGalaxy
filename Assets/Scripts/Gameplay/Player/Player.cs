@@ -19,53 +19,29 @@ public class Player : MonoBehaviour {
 	private Vector2 oldMoveDirection;
 	private Vector2 jumpDir;
 
+	//Gravity
+	public GravityAttractor strongestAttractor;
+	private float strongestGravity;
+	public GravityAttractor[] attractors;
+	private Transform myTransform;
+
 	Animator Anim;
 
 	void Start () {
 		Anim = GetComponent<Animator>();
+		myTransform = transform;
 	}
 
 	void FixedUpdate () {
 		
 		//Movement
-		float move = 0.0f;
-		//if (Grounded) {
-			if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0) {
-				move = Input.GetAxis("Horizontal");
-			} else {
-				move = ControllerInput.LeftAnalog_X_Axis(id, 0.2f);
-			}
+		Movement();
 
-		if ((move > 0 || move < 0) && Grounded) {
-			rigidbody2D.drag = runDrag;
-		} else if (!Grounded) {
-			rigidbody2D.drag = airDrag;
-		} else {
-			rigidbody2D.drag = groundDrag;
-		}
-		//}
+		//Gravity
+		ApplyGravity();
 
-		//Vector2 oldBodyForce =  rigidbody2D.velocity - oldMoveDirection;
-		moveDirection = transform.right * (maxSpeed * move);
-		//rigidbody2D.velocity = (moveDirection); // + oldBodyForce);
-		rigidbody2D.AddForce(moveDirection * 3);
-		//oldMoveDirection = moveDirection;
-
-		Debug.DrawLine(transform.position, (rigidbody2D.velocity + new Vector2(transform.position.x , transform.position.y)), Color.cyan);
-		//rigidbody2D.AddForce(moveDirection);
 	
-		//		Debug.Log("Move Value: " + Move);
-		Anim.SetFloat("Speed", Mathf.Abs(move));
-		
-		if(move > 0 && !FacingRight) {
-			Flip();
-		}else if (move < 0 && FacingRight) {
-			Flip();
-		}
-		
-		Grounded = Physics2D.OverlapCircle(GroundCheck.position, GroundRadius, GroundLayerMask);
-		Anim.SetBool ("Grounded", Grounded);
-		Anim.SetFloat("VSpeed", rigidbody2D.velocity.y);
+
 		
 	}
 
@@ -85,5 +61,64 @@ public class Player : MonoBehaviour {
 		Vector3 TheScale = transform.localScale;
 		TheScale.x *= -1;
 		transform.localScale = TheScale;
+	}
+
+	void Movement() {
+		float move = 0.0f;
+		//if (Grounded) {
+		if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0) {
+			move = Input.GetAxis("Horizontal");
+		} else {
+			move = ControllerInput.LeftAnalog_X_Axis(id, 0.2f);
+		}
+		
+		if ((move > 0 || move < 0) && Grounded) {
+			rigidbody2D.drag = runDrag;
+		} else if (!Grounded) {
+			rigidbody2D.drag = airDrag;
+		} else {
+			rigidbody2D.drag = groundDrag;
+		}
+
+		//Vector2 oldBodyForce =  rigidbody2D.velocity - oldMoveDirection;
+		moveDirection = transform.right * (maxSpeed * move);
+		//rigidbody2D.velocity = (moveDirection); // + oldBodyForce);
+		rigidbody2D.AddForce(moveDirection * 3);
+		//oldMoveDirection = moveDirection;
+
+		//		Debug.Log("Move Value: " + Move);
+		Anim.SetFloat("Speed", Mathf.Abs(move));
+		
+		if(move > 0 && !FacingRight) {
+			Flip();
+		}else if (move < 0 && FacingRight) {
+			Flip();
+		}
+		
+		Grounded = Physics2D.OverlapCircle(GroundCheck.position, GroundRadius, GroundLayerMask);
+		Anim.SetBool ("Grounded", Grounded);
+		Anim.SetFloat("VSpeed", rigidbody2D.velocity.y);
+	}
+
+	void ApplyGravity() {
+		Vector3 gravityAverage = new Vector3(0,0,0);
+		foreach (GravityAttractor planet in attractors) {
+			if (planet.Attract(myTransform).magnitude > strongestGravity) {
+				strongestGravity = (planet.Attract(myTransform)).magnitude;
+				strongestAttractor = planet;
+			}
+			gravityAverage += planet.Attract(myTransform);
+		}
+		//Rotation
+		Quaternion targetRotation = strongestAttractor.Orientation(myTransform);
+		transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,50f * Time.deltaTime );
+		
+		//Gravity
+		if (Grounded) {
+			Vector3 gravitySingular = strongestAttractor.Attract(myTransform);
+			rigidbody2D.AddForce(gravitySingular);
+		} else {
+			rigidbody2D.AddForce(gravityAverage);
+		}
 	}
 }

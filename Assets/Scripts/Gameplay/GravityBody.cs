@@ -2,7 +2,9 @@
 using System.Collections;
 
 public class GravityBody : MonoBehaviour {
-	
+
+	public GravityAttractor strongestAttractor;
+	private float strongestGravity;
 	public GravityAttractor[] attractors;
 	private Transform myTransform;
 	
@@ -18,8 +20,17 @@ public class GravityBody : MonoBehaviour {
 		//Debug.Log("player pos: " + transform.position);
 		Vector3 gavityAverage = new Vector3(0,0,0);
 		foreach (GravityAttractor planet in attractors) {
+			if (planet.Attract(myTransform).magnitude > strongestGravity) {
+				strongestGravity = (planet.Attract(myTransform)).magnitude;
+				//strongestAttractor = planet;
+			}
 			gavityAverage += planet.Attract(myTransform);
 		}
+		//Rotation
+		Quaternion targetRotation = strongestAttractor.Orientation(myTransform);
+		transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,50f * Time.deltaTime );
+
+		//Gravity
 		rigidbody2D.AddForce(gavityAverage);
 	}
 }
