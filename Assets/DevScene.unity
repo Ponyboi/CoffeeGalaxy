@@ -173,7 +173,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee204122a0f4b374daf561a3ce96980b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attractor: {fileID: 2042876118}
+  strongestAttractor: {fileID: 2042876118}
+  attractors:
+  - {fileID: 2042876118}
+  - {fileID: 1888505714}
 --- !u!23 &227531668
 Renderer:
   m_ObjectHideFlags: 0
@@ -516,7 +519,6 @@ GameObject:
   - 61: {fileID: 690270903}
   - 95: {fileID: 690270902}
   - 114: {fileID: 690270908}
-  - 114: {fileID: 690270909}
   m_Layer: 8
   m_Name: Player1
   m_TagString: Untagged
@@ -632,22 +634,14 @@ MonoBehaviour:
   GroundLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  JumpForce: 700
+  JumpForce: 1200
   groundDrag: 5
   runDrag: 1.79999995
   airDrag: 2.5
---- !u!114 &690270909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 690270901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee204122a0f4b374daf561a3ce96980b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attractor: {fileID: 2042876118}
+  strongestAttractor: {fileID: 2042876118}
+  attractors:
+  - {fileID: 2042876118}
+  - {fileID: 1888505714}
 --- !u!1 &696031705
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,7 +1088,6 @@ GameObject:
   - 61: {fileID: 1797474069}
   - 95: {fileID: 1797474068}
   - 114: {fileID: 1797474067}
-  - 114: {fileID: 1797474073}
   m_Layer: 8
   m_Name: Player2
   m_TagString: Untagged
@@ -1131,10 +1124,14 @@ MonoBehaviour:
   GroundLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  JumpForce: 700
+  JumpForce: 1200
   groundDrag: 5
   runDrag: 1.79999995
   airDrag: 2.5
+  strongestAttractor: {fileID: 2042876118}
+  attractors:
+  - {fileID: 2042876118}
+  - {fileID: 1888505714}
 --- !u!95 &1797474068
 Animator:
   serializedVersion: 2
@@ -1214,18 +1211,6 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_Sprite: {fileID: 21300000, guid: b544969270aecc04f8dc286e0a222fa2, type: 3}
   m_Color: {r: .862068892, g: 1, b: 0, a: 1}
---- !u!114 &1797474073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1797474065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee204122a0f4b374daf561a3ce96980b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attractor: {fileID: 2042876118}
 --- !u!1 &1880593515
 GameObject:
   m_ObjectHideFlags: 0
@@ -1286,6 +1271,115 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -15.1604767, y: -1.12274599, z: 0}
   m_LocalScale: {x: 5.59956598, y: 5.59956598, z: 5.59956598}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!1 &1888505713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1888505720}
+  - 33: {fileID: 1888505719}
+  - 23: {fileID: 1888505718}
+  - 50: {fileID: 1888505717}
+  - 58: {fileID: 1888505716}
+  - 114: {fileID: 1888505715}
+  - 114: {fileID: 1888505714}
+  m_Layer: 9
+  m_Name: Planet1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1888505714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00fe04968a4ca0c4da5816ac9edc7e96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -20
+--- !u!114 &1888505715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de3e289c8b439064e8d22c0413d656c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &1888505716
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Radius: .500000119
+  m_Center: {x: 0, y: 0}
+--- !u!50 &1888505717
+Rigidbody2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Mass: 2500
+  m_LinearDrag: 0
+  m_AngularDrag: .0500000007
+  m_GravityScale: 1
+  m_FixedAngle: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+--- !u!23 &1888505718
+Renderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_LightmapIndex: 255
+  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
+  m_Materials:
+  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 0
+  m_LightProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortingLayerID: 0
+--- !u!33 &1888505719
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1888505720
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1888505713}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -36.856842, y: -43.8184052, z: 0}
+  m_LocalScale: {x: 28.0719585, y: 28.0719585, z: 28.0719585}
   m_Children: []
   m_Father: {fileID: 0}
 --- !u!1001 &1897886522
@@ -1397,7 +1491,7 @@ GameObject:
   - 114: {fileID: 2042876117}
   - 114: {fileID: 2042876118}
   m_Layer: 9
-  m_Name: Planet
+  m_Name: Planet0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1459,7 +1553,7 @@ Rigidbody2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2042876111}
-  m_Mass: 1
+  m_Mass: 3000
   m_LinearDrag: 0
   m_AngularDrag: .0500000007
   m_GravityScale: 1
