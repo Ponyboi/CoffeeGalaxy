@@ -1,0 +1,24 @@
+<html>
+  <body>
+    
+  <script src="raphael-min.js"></script>
+  <script>
+    // ...
+
+    var paper = Raphael(10, 50, 320, 200);
+    var path_string = "M10 10 L 20 20 L 100 10"; // Original coordinates
+    var path = paper.path(path_string);
+
+    // To relative coordinates
+    var path_string_rel = Raphael.pathToRelative(path_string);
+    console.log(path_string_rel);
+
+    // To absolute coordinates
+    var path_string_abs = Raphael._pathToAbsolute(path_string_rel);
+    console.log(path_string_abs);
+
+    // ...    
+  </script>
+
+  </body>
+</html>
