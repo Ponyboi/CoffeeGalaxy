@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 
@@ -19,17 +20,27 @@ public class Player : MonoBehaviour {
 	private Vector2 oldMoveDirection;
 	private Vector2 jumpDir;
 
+	//Booster
+	public bool isBoosting = false;
+	public float fuel = 100;
+	public float boosterForce;
+
 	//Gravity
 	public GravityAttractor strongestAttractor;
 	private float strongestGravity;
-	public GravityAttractor[] attractors;
-	private Transform myTransform;
 
+	private Transform myTransform;
+	public List<GravityAttractor> attractors;
 	Animator Anim;
 
 	void Start () {
 		Anim = GetComponent<Animator>();
 		myTransform = transform;
+
+		int children = transform.childCount;
+		GameObject planets = GameObject.Find("_Planets");
+		for (int i = 0; i < children; ++i)
+			attractors.AddRange(planets.GetComponentsInChildren<GravityAttractor>());
 	}
 
 	void FixedUpdate () {
@@ -39,10 +50,7 @@ public class Player : MonoBehaviour {
 
 		//Gravity
 		ApplyGravity();
-
 	
-
-		
 	}
 
 	void Update() {
@@ -64,15 +72,16 @@ public class Player : MonoBehaviour {
 	}
 
 	void Movement() {
-		float move = 0.0f;
+		//Movement
+		//float move = 0.0f;
 		//if (Grounded) {
 		if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0) {
-			move = Input.GetAxis("Horizontal");
+			moveDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 		} else {
-			move = ControllerInput.LeftAnalog_X_Axis(id, 0.2f);
+			moveDirection = new Vector2(ControllerInput.LeftAnalog_X_Axis(id, 0.2f), ControllerInput.LeftAnalog_Y_Axis(id, 0.2f));
 		}
 		
-		if ((move > 0 || move < 0) && Grounded) {
+		if ((moveDirection.x > 0 || moveDirection.x < 0) && Grounded) {
 			rigidbody2D.drag = runDrag;
 		} else if (!Grounded) {
 			rigidbody2D.drag = airDrag;
@@ -80,24 +89,36 @@ public class Player : MonoBehaviour {
 			rigidbody2D.drag = groundDrag;
 		}
 
-		//Vector2 oldBodyForce =  rigidbody2D.velocity - oldMoveDirection;
-		moveDirection = transform.right * (maxSpeed * move);
-		//rigidbody2D.velocity = (moveDirection); // + oldBodyForce);
-		rigidbody2D.AddForce(moveDirection * 3);
-		//oldMoveDirection = moveDirection;
+		Vector2 moveDirectionApplied = ((transform.right) * maxSpeed) * moveDirection.x;
+		rigidbody2D.AddForce(moveDirectionApplied * 3);
 
-		//		Debug.Log("Move Value: " + Move);
-		Anim.SetFloat("Speed", Mathf.Abs(move));
-		
-		if(move > 0 && !FacingRight) {
+		Anim.SetFloat("Speed", Mathf.Abs(moveDirection.x));
+
+		if(moveDirection.x > 0 && !FacingRight) {
 			Flip();
-		}else if (move < 0 && FacingRight) {
+		}else if (moveDirection.x < 0 && FacingRight) {
 			Flip();
 		}
 		
 		Grounded = Physics2D.OverlapCircle(GroundCheck.position, GroundRadius, GroundLayerMask);
 		Anim.SetBool ("Grounded", Grounded);
 		Anim.SetFloat("VSpeed", rigidbody2D.velocity.y);
+
+		//Booster
+		if (Input.GetKey(KeyCode.LeftShift) && fuel > 5) {
+			rigidbody2D.AddForce(boosterForce * moveDirection);
+			fuel -= 2;
+			isBoosting = true;
+		} else if (ControllerInput.Left_Bumper_Button(id) && fuel > 5) {
+			rigidbody2D.AddForce(boosterForce * moveDirection);
+			fuel -= 2;
+			isBoosting = true;
+		} else {
+			isBoosting = false;
+		}
+		if (fuel < 100)
+			fuel += 0.3f;
+
 	}
 
 	void ApplyGravity() {

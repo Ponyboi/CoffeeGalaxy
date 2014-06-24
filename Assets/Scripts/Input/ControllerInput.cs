@@ -65,7 +65,7 @@ public class ControllerInput : MonoBehaviour {
 	void CheckPlatform(){
 		//Disabled this if() because it can't check platform in editor
 		//if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsWebPlayer){
-
+		
 			LeftAnalog_X_AxisString = LeftAnalog_X_AxisString_Windows;
 			LeftAnalog_Y_AxisString = LeftAnalog_Y_AxisString_Windows;
 			RightAnalog_X_AxisString = RightAnalog_X_AxisString_Windows;
@@ -73,6 +73,7 @@ public class ControllerInput : MonoBehaviour {
 
 			LeftTrigger_AxisString = LeftTrigger_AxisString_Windows;
 			RightTrigger_AxisString = RightTrigger_AxisString_Windows;
+	
 	//	}
 	}
 	
@@ -185,6 +186,18 @@ public class ControllerInput : MonoBehaviour {
 	
 	public static bool Left_Dpad_ButtonUp(int controllerNum){
 		return ButtonUp(instance.Y_ButtonFireString, controllerNum);	
+	}
+
+	public static bool Left_Bumper_ButtonDown(int controllerNum){
+		return ButtonDown(instance.Left_Bumper_ButtonString, controllerNum);	
+	}
+	
+	public static bool Left_Bumper_Button(int controllerNum){
+		return Button(instance.Left_Bumper_ButtonString, controllerNum);	
+	}
+	
+	public static bool Left_Bumper_ButtonUp(int controllerNum){
+		return ButtonUp(instance.Left_Bumper_ButtonString, controllerNum);	
 	}
 	
 	public static float LeftAnalog_X_Axis(int controllerNum){
