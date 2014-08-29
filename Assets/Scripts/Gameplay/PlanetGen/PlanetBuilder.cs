@@ -79,6 +79,7 @@ public class PlanetBuilder : MonoBehaviour {
 		//this.GetComponent<MeshFilter>().mesh = planet;
 		//this.GetComponent<MeshCollider>().mesh = planet;
 		this.GetComponent<PolygonCollider2D>().points = points2D;
+		//this.GetComponent<PlanetDeform>().
 		//this.GetComponent<EdgeCollider2D>().points = points2D;
 	}
 

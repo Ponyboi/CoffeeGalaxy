@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 
@@ -19,17 +20,39 @@ public class Player : MonoBehaviour {
 	private Vector2 oldMoveDirection;
 	private Vector2 jumpDir;
 
+	//Ground Rotation
+	public Vector2 rayOffset = new Vector2(0.3f, 0.4f);
+	private float rayDist = 2f;
+	private float maxRotationDegrees = 4f; 
+	private float positionOffsetY = 0f;
+	private RaycastHit2D leftHitInfo;
+	private RaycastHit2D rightHitInfo;
+	private Vector3 averageNormalUp;
+	private Vector3 rightNormal;
+	private Vector3 leftNormal;
+	private float rotationMax = 30f;  //rotation difference between center of planet and slop of terrain in degrees
+
+	//Booster
+	public bool isBoosting = false;
+	public float fuel = 100;
+	public float boosterForce;
+
 	//Gravity
 	public GravityAttractor strongestAttractor;
 	private float strongestGravity;
-	public GravityAttractor[] attractors;
-	private Transform myTransform;
 
+	private Transform myTransform;
+	public List<GravityAttractor> attractors;
 	Animator Anim;
 
 	void Start () {
 		Anim = GetComponent<Animator>();
 		myTransform = transform;
+
+		int children = transform.childCount;
+		GameObject planets = GameObject.Find("_Planets");
+		for (int i = 0; i < children; ++i)
+			attractors.AddRange(planets.GetComponentsInChildren<GravityAttractor>());
 	}
 
 	void FixedUpdate () {
@@ -39,22 +62,25 @@ public class Player : MonoBehaviour {
 
 		//Gravity
 		ApplyGravity();
-
 	
-
-		
 	}
 
 	void Update() {
 		if ((Grounded && ControllerInput.A_ButtonDown(id)) || (Grounded && Input.GetKeyDown(KeyCode.W))) {
 			Anim.SetBool("Ground", false);
-			jumpDir = transform.up * JumpForce;
+			//jumpDir = transform.up * JumpForce;
+			jumpDir = (transform.position - strongestAttractor.transform.position).normalized * JumpForce;
 
 			rigidbody2D.AddForce(jumpDir);
 			//rigidbody2D.AddForce(new Vector2(0, JumpForce));
 		}
 		Debug.DrawLine(transform.position, transform.position + (new Vector3(jumpDir.x, jumpDir.y, 0)*0.5f), Color.blue);
-		Debug.DrawLine(transform.position, transform.position + (new Vector3(moveDirection.x, moveDirection.y, 0) * 0.5f), Color.red);
+		Vector2 moveDirectionRot = ((transform.right) * maxSpeed) * moveDirection.x + transform.up*0.2f;
+		Debug.DrawLine(transform.position, transform.position + (new Vector3(moveDirectionRot.x, moveDirectionRot.y, 0) * 3f), Color.red);
+		Debug.DrawLine(transform.position, transform.position + averageNormalUp * 50f, Color.magenta);
+		//Debug.Log("averageNormalUp: " + averageNormalUp);
+		Debug.DrawLine(transform.position, transform.position + leftNormal * 50f, Color.green);
+		Debug.DrawLine(transform.position, transform.position + rightNormal * 50f, Color.green);
 	}
 
 	void Flip() {
@@ -65,40 +91,54 @@ public class Player : MonoBehaviour {
 	}
 
 	void Movement() {
-		float move = 0.0f;
+		//Movement
+		//float move = 0.0f;
 		//if (Grounded) {
 		if (Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Horizontal") < 0) {
-			move = Input.GetAxis("Horizontal");
+			moveDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 		} else {
-			move = ControllerInput.LeftAnalog_X_Axis(id, 0.2f);
+			moveDirection = new Vector2(ControllerInput.LeftAnalog_X_Axis(id, 0.2f), ControllerInput.LeftAnalog_Y_Axis(id, 0.2f));
 		}
 		
-		if ((move > 0 || move < 0) && Grounded) {
+		if ((moveDirection.x > 0 || moveDirection.x < 0) && Grounded) {
 			rigidbody2D.drag = runDrag;
 		} else if (!Grounded) {
 			rigidbody2D.drag = airDrag;
 		} else {
 			rigidbody2D.drag = groundDrag;
 		}
-
-		//Vector2 oldBodyForce =  rigidbody2D.velocity - oldMoveDirection;
-		moveDirection = (transform.right * (maxSpeed * move)) + transform.up*0.2f;
-		//rigidbody2D.velocity = (moveDirection); // + oldBodyForce);
-		rigidbody2D.AddForce(moveDirection * 3);
-		//oldMoveDirection = moveDirection;
-
-		//		Debug.Log("Move Value: " + Move);
-		Anim.SetFloat("Speed", Mathf.Abs(move));
 		
-		if(move > 0 && !FacingRight) {
+		Vector2 moveDirectionApplied = ((transform.right) * maxSpeed) * moveDirection.x + transform.up*0.2f;
+		rigidbody2D.AddForce(moveDirectionApplied * 3);
+
+
+		Anim.SetFloat("Speed", Mathf.Abs(moveDirection.x));
+
+		if(moveDirection.x > 0 && !FacingRight) {
 			Flip();
-		}else if (move < 0 && FacingRight) {
+		}else if (moveDirection.x < 0 && FacingRight) {
 			Flip();
 		}
 		
 		Grounded = Physics2D.OverlapCircle(GroundCheck.position, GroundRadius, GroundLayerMask);
 		Anim.SetBool ("Grounded", Grounded);
 		Anim.SetFloat("VSpeed", rigidbody2D.velocity.y);
+
+		//Booster
+		if (Input.GetKey(KeyCode.LeftShift) && fuel > 5) {
+			rigidbody2D.AddForce(boosterForce * moveDirection);
+			fuel -= 2;
+			isBoosting = true;
+		} else if (ControllerInput.Left_Bumper_Button(id) && fuel > 5) {
+			rigidbody2D.AddForce(boosterForce * moveDirection);
+			fuel -= 2;
+			isBoosting = true;
+		} else {
+			isBoosting = false;
+		}
+		if (fuel < 100)
+			fuel += 0.3f;
+
 	}
 
 	void ApplyGravity() {
@@ -111,8 +151,19 @@ public class Player : MonoBehaviour {
 			gravityAverage += planet.Attract(myTransform);
 		}
 		//Rotation
-		Quaternion targetRotation = strongestAttractor.Orientation(myTransform);
-		transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,50f * Time.deltaTime );
+		if (Grounded) {
+			if (doubleRaycastDown(rayOffset, rayDist, out leftHitInfo, out rightHitInfo)) {
+				//Debug.Log("LeftHitInfo: " + leftHitInfo.normal);
+				positionOnTerrain(leftHitInfo, rightHitInfo, maxRotationDegrees, positionOffsetY);
+			}
+			if (Vector3.Angle(averageNormalUp, (transform.position - strongestAttractor.transform.position)) > rotationMax) {
+				Quaternion targetRotation = strongestAttractor.Orientation(myTransform);
+				transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,50f * Time.deltaTime );
+			}
+		} else {
+			Quaternion targetRotation = strongestAttractor.Orientation(myTransform);
+			transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,50f * Time.deltaTime );
+		}
 		
 		//Gravity
 		if (Grounded) {
@@ -123,31 +174,53 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-//	bool doubleRaycastDown(TerrainMovementRayProperties movementRay, float rayLength,
-//	                       out RaycastHit leftHitInfo, out RaycastHit rightHitInfo)
-//	{
-//		Vector3 transformUp = transform.up;
-//		Vector3 transformRight = transform.right;
-//		Ray leftRay = new Ray(transform.position + movementRay.originOffsetY * transformUp
-//		                      + movementRay.distanceFromCenter * transformRight, -transformUp);
-//		Ray rightRay = new Ray(transform.position + movementRay.originOffsetY * transformUp
-//		                       - movementRay.distanceFromCenter * transformRight, -transformUp);
-//		
-//		return Physics.Raycast(leftRay, out leftHitInfo, rayLength, DefaultTerrainLayerMask)
-//			&& Physics.Raycast(rightRay, out rightHitInfo, rayLength, DefaultTerrainLayerMask);
-//	}
+	public bool doubleRaycastDown(Vector2 movementRay, float rayLength,
+	                       out RaycastHit2D leftHitInfo, out RaycastHit2D rightHitInfo)
+	{
+		Vector2 transformUp = transform.up;
+		Vector2 transformRight = transform.right;
+//		Ray leftRay = new Ray(transform.position + movementRay.y * transformUp
+//		                      + movementRay.x * transformRight, -transformUp);
+//		Ray rightRay = new Ray(transform.position + movementRay.y * transformUp
+//		                       - movementRay.x * transformRight, -transformUp);
+		Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
+		Vector2 leftRay = new Vector2(myPos.x + movementRay.x, + myPos.y + movementRay.y);
+		Vector2 rightRay = new Vector2(myPos.x - movementRay.x, + myPos.y + movementRay.y);
+		
+		//		Debug.DrawLine(transform.position + movementRay.y * transformUp
+//		               + movementRay.x * transformRight, transform.position - movementRay.y * transformUp + movementRay.x * transformRight, Color.green);
+//		Debug.DrawLine(transform.position + movementRay.y * transformUp
+//			- movementRay.x * transformRight, transform.position - movementRay.y * transformUp - movementRay.x * transformRight, Color.green);
+		
+		
+		rightHitInfo = new RaycastHit2D();
+		leftHitInfo = new RaycastHit2D();
+		
+		leftHitInfo = Physics2D.Raycast(leftRay, -transformUp, rayLength, GroundLayerMask);
+		rightHitInfo = Physics2D.Raycast(rightRay, -transformUp, rayLength, GroundLayerMask);
 
-	void positionOnTerrain(RaycastHit leftHitInfo, RaycastHit rightHitInfo,
+		if (leftHitInfo != null && rightHitInfo != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public void positionOnTerrain(RaycastHit2D leftHitInfo, RaycastHit2D rightHitInfo,
 	                       float maxRotationDegrees, float positionOffsetY)
 	{
-		Vector3 averageNormal = (leftHitInfo.normal + rightHitInfo.normal) / 2;
-		Vector3 averagePoint = (leftHitInfo.point + rightHitInfo.point) / 2;
+		Vector2 averageNormal = (leftHitInfo.normal + rightHitInfo.normal) / 2;
+		Vector2 averagePoint = (leftHitInfo.point + rightHitInfo.point) / 2;
+
+		averageNormalUp = averageNormal;
+		leftNormal = leftHitInfo.normal;
+		rightNormal = rightHitInfo.normal;
 		
 		Quaternion targetRotation = Quaternion.FromToRotation(Vector3.up, averageNormal);
 		Quaternion finalRotation = Quaternion.RotateTowards(transform.rotation, targetRotation,
 		                                                    maxRotationDegrees);
 		transform.rotation = Quaternion.Euler(0, 0, finalRotation.eulerAngles.z);
 		
-		transform.position = averagePoint + transform.up * positionOffsetY;
+		//transform.position = averagePoint + transform.up * positionOffsetY;
 	}
 }

@@ -5,9 +5,10 @@ public class GameController : MonoBehaviour {
 	public Camera mainCamera;
 	public float cameraZoom;
 	public GameObject ship;
-	public GameObject[] players;
+	public Player[] players;
 	public int id;
 	public cameraModes cameraMode;
+	float slerpTime;
 
 	//Camera Mode Enum
 	public enum cameraModes {Coop, Ship, Player};
@@ -49,8 +50,12 @@ public class GameController : MonoBehaviour {
 	//follow particular player
 	void playerCam(int id) {
 		Vector3 playerPos = players[id].transform.position;
-		mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, new Vector3(playerPos.x, playerPos.y, cameraZoom), Time.deltaTime * 10);
-		mainCamera.orthographicSize = 26;
+		mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, new Vector3(playerPos.x, playerPos.y, -20), Time.deltaTime * 10);
+		Quaternion targetRotation = players[id].strongestAttractor.Orientation(players[id].transform);
+		slerpTime += (50f * Time.deltaTime);
+		slerpTime = Mathf.Max(1, slerpTime);
+		mainCamera.transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, slerpTime );
+		mainCamera.orthographicSize = cameraZoom;
 	}
-	
+
 }
